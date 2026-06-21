@@ -861,7 +861,8 @@ def do_indent(
             )
 
     if first:
-        rv = indention + rv
+        if blank or rv:
+            rv = indention + rv
 
     return rv
 
