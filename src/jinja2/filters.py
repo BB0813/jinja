@@ -55,11 +55,14 @@ def ignore_case(value: V) -> V:
     return value
 
 
+_missing = object()
+
+
 def make_attrgetter(
     environment: "Environment",
     attribute: str | int | None,
     postprocess: t.Callable[[t.Any], t.Any] | None = None,
-    default: t.Any | None = None,
+    default: t.Any = _missing,
 ) -> t.Callable[[t.Any], t.Any]:
     """Returns a callable that looks up the given attribute from a
     passed object with the rules of the environment.  Dots are allowed
@@ -72,7 +75,7 @@ def make_attrgetter(
         for part in parts:
             item = environment.getitem(item, part)
 
-            if default is not None and isinstance(item, Undefined):
+            if default is not _missing and isinstance(item, Undefined):
                 item = default
 
         if postprocess is not None:
@@ -1721,7 +1724,7 @@ def prepare_map(
 ) -> t.Callable[[t.Any], t.Any]:
     if not args and "attribute" in kwargs:
         attribute = kwargs.pop("attribute")
-        default = kwargs.pop("default", None)
+        default = kwargs.pop("default", _missing)
 
         if kwargs:
             raise FilterArgumentError(
